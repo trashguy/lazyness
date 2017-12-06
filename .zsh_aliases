@@ -1,0 +1,59 @@
+alias drmi='docker images -qf dangling=true | xargs docker rmi'
+alias drmc='docker rm $(docker ps -a -q)'
+
+alias open='google-chrome-stable'
+
+alias sc='echo -e "\nMy shortcuts: \n"; cat ~/.zsh_aliases | grep "alias\|function"; echo -e "\n"' # List out all our shortcuts and functions!
+alias gco="git checkout" # checks out a branch
+# gco FEATURE-122
+alias gcob="git checkout -b" # Creates a new branch and checks it out
+# gcob FEATURE-123
+ 
+alias gcam="git commit -am" # Automatically stages all modified and deleted files and commits. Allows you to add a message
+# gcam "FEATURE-123 This is the commit message"
+ 
+alias gs='git status'
+alias gd='git diff' # Shows the difference between uncommitted work
+alias gdh='git diff HEAD^' # Shows what changes the previous commit introduced
+alias gcm='git commit -m' # Commits that which has been staged
+alias gb='git branch' # Shows what branch you currently are on
+alias gra='git remote add' # Allows the adding of a new remote
+# gra upstream git@github.com:reachlocal/AWS.git
+alias grr='git remote rm' # deletes a remote you specify
+# grr upstream
+alias gpl='git pull'
+alias gm='git merge --no-ff'
+alias gcl='git clone'
+alias uncommit='git reset --soft HEAD^' # Keeps all the changes you added in the previous commit (and current changes you have yet to commit) and reverts to previously made commit.  Notice, this changes history!
+alias rmb='git branch -D'
+alias ggpush='git push origin $(current_branch)'
+alias ggpull='git pull origin $(current_branch)'
+alias gamend='git commit --amend -a' # Allows you to recreate the latest commit. Notice, doing so will change history. Make sure you know what you are doing. If you have already pushed, you will have to force push up.
+ 
+# Retrieves the currently checkout branch if inside a repo
+function current_branch() {
+  ref=$(git symbolic-ref HEAD 2> /dev/null) || \
+  ref=$(git rev-parse --short HEAD 2> /dev/null) || return
+  echo ${ref#refs/heads/}
+}
+ 
+# virtual env
+# Does one of three things:
+#1) venv (with no arguments) -- returns all virtual envs you have inside the ${venv_dir} directory
+#2) venv <venv> -- activates one of the valid virtual envs you have. stop virtual env by returning "deactivate"
+#3) venv add <venv> -- Creates a new venv with the name you specify
+# Ensure you specify the correct location for your virtual envs with ${venv_dir}. Create it if you don't already have it.
+function venv() {
+    venv_dir='~/.virtualenvs'
+    if [[ -z ${1} ]]; then
+        echo -e "Which virtualenv would you like to activate?\n"
+        eval "ls ${venv_dir}" | grep "/$" | sed 's/.$//'
+        return 1
+    fi
+    if [[ ${1} == 'add' ]]; then
+        if [[ -z ${2} ]]; then return 1; fi
+        eval "virtualenv ${venv_dir}/${2}"
+        return 1
+    fi
+    eval "source ${venv_dir}/${1}/bin/activate"
+}
